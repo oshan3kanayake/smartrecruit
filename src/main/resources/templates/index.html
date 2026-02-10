@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>SmartRecruit - Premier Staffing Solutions</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Animation Libraries -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0f172a; /* Deep Navy */
+      --secondary: #334155;
+      --gold: #d4af37;    /* Luxury Gold */
+      --light: #f8fafc;
+    }
+
+    body { font-family: 'Poppins', sans-serif; overflow-x: hidden; color: var(--secondary); }
+
+    /* --- SMART SCAN PRELOADER --- */
+    #preloader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: var(--primary); z-index: 99999;
+      display: flex; justify-content: center; align-items: center; flex-direction: column;
+      transition: opacity 0.6s ease-out;
+    }
+    .scan-container { position: relative; width: 80px; height: 100px; margin-bottom: 30px; }
+    .doc-icon { font-size: 5rem; color: #334155; position: absolute; top: 0; left: 0; transition: color 0.5s; }
+    .scan-line {
+      width: 100%; height: 4px; background: var(--gold);
+      position: absolute; top: 0; left: 0;
+      box-shadow: 0 0 15px var(--gold);
+      animation: scanMove 2s ease-in-out forwards; opacity: 0;
+    }
+    .check-icon {
+      font-size: 4rem; color: var(--gold); position: absolute; top: 15px; left: 15px;
+      opacity: 0; transform: scale(0.5);
+    }
+    .loader-text { color: white; font-weight: 300; letter-spacing: 2px; font-size: 1.1rem; opacity: 0.8; }
+
+    @keyframes scanMove {
+      0% { top: 0; opacity: 1; }
+      50% { top: 100%; opacity: 1; }
+      51% { top: 100%; opacity: 0; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .scan-complete .doc-icon { color: white; opacity: 0.1; }
+    .scan-complete .check-icon { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+    /* --- END PRELOADER --- */
+
+    /* Navbar */
+    .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); padding: 15px 0; }
+    .navbar-brand { color: var(--primary) !important; font-weight: 700; font-size: 1.5rem; }
+    .nav-link { color: var(--primary) !important; font-weight: 500; margin: 0 15px; position: relative; }
+    .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: var(--gold); transition: width .3s; }
+    .nav-link:hover::after { width: 100%; }
+
+    .btn-custom {
+      background-color: var(--gold); color: white; padding: 10px 30px; border-radius: 50px;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: none; transition: all 0.3s;
+    }
+    .btn-custom:hover { background-color: #b5952f; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); }
+
+    /* Hero */
+    .hero-section {
+      position: relative; height: 90vh; display: flex; align-items: center; color: white;
+      background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover; background-position: center; background-attachment: fixed;
+    }
+    .hero-title { font-size: 3.5rem; font-weight: 700; line-height: 1.2; }
+    .hero-subtitle { font-size: 1.2rem; font-weight: 300; margin-bottom: 30px; opacity: 0.9; }
+
+    /* Search & Services */
+    .search-container { margin-top: -60px; position: relative; z-index: 10; }
+    .search-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    .form-control, .form-select { border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; }
+    .service-card { background: white; padding: 40px 30px; border-radius: 15px; border: 1px solid #f1f5f9; transition: all 0.3s ease; height: 100%; }
+    .service-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: var(--gold); }
+    .icon-box { width: 70px; height: 70px; background: rgba(212, 175, 55, 0.1); color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 25px; transition: all 0.3s; }
+    .service-card:hover .icon-box { background: var(--gold); color: white; }
+
+    .stats-section { background-color: var(--primary); color: white; padding: 80px 0; }
+    .stat-number { font-size: 3rem; font-weight: 700; color: var(--gold); }
+    footer { background: #0f172a; color: #94a3b8; padding: 60px 0 20px; }
+    footer h5 { color: white; margin-bottom: 20px; font-weight: 600; }
+    footer a { color: #94a3b8; text-decoration: none; display: block; margin-bottom: 10px; transition: color 0.3s; }
+    footer a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="scan-container" id="scan-container">
+    <i class="fas fa-file-invoice doc-icon"></i>
+    <div class="scan-line"></div>
+    <i class="fas fa-check-circle check-icon"></i>
+  </div>
+  <div class="loader-text" id="loader-text">Analyzing Profiles...</div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top animate__animated animate__fadeInDown">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-layer-group" style="color: var(--gold);"></i> SMART RECRUIT
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/jobs">Find Jobs</a></li>
+
+        <li class="nav-item" th:if="${user == null}">
+          <a class="nav-link btn btn-custom ms-3 text-white" href="/login">Login / Register</a>
+        </li>
+
+        <li class="nav-item" th:if="${user != null}">
+          <a class="nav-link fw-bold text-primary" href="/hr-profile">My Dashboard</a>
+        </li>
+        <li class="nav-item" th:if="${user != null}">
+          <a class="nav-link btn btn-sm btn-outline-dark ms-2" href="/logout">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<header class="hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-7">
+        <span class="text-uppercase fw-bold animate__animated animate__fadeInUp" style="color: var(--gold); letter-spacing: 2px;">Local Talent Solutions</span>
+        <h1 class="hero-title my-3 animate__animated animate__fadeInUp animate__delay-1s">
+          Building Teams,<br>Building Futures.
+        </h1>
+        <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+          We connect local businesses with skilled professionals in your city.
+          Efficient, reliable, and tailored to your needs.
+        </p>
+        <div class="animate__animated animate__fadeInUp animate__delay-2s">
+          <a href="/register" class="btn btn-custom btn-lg me-3">I'm Hiring</a>
+          <a href="/jobs" class="btn btn-outline-light btn-lg rounded-pill px-4">Find Work</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- FLOATING SEARCH BAR (THIS IS THE WORKING ONE) -->
+<div class="container search-container animate__animated animate__fadeInUp animate__delay-2s">
+  <div class="search-box">
+    <!-- ACTION is set to /search, METHOD is GET -->
+    <form class="row g-3 align-items-end" action="/search" method="get">
+      <div class="col-md-5">
+        <label class="form-label text-muted fw-bold small">WHAT</label>
+        <!-- NAME is keyword -->
+        <input type="text" name="keyword" class="form-control" placeholder="Job title, keywords, or company">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label text-muted fw-bold small">WHERE</label>
+        <!-- NAME is location -->
+        <select class="form-select" name="location">
+          <option selected value="All Locations">All Locations</option>
+          <option value="City Center">City Center</option>
+          <option value="Industrial Park">Industrial Park</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-custom w-100 py-2">Search Jobs</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- SERVICES SECTION -->
+<div class="container py-5 my-5">
+  <div class="text-center mb-5" data-aos="fade-up">
+    <h6 class="text-uppercase fw-bold" style="color: var(--gold);">Our Expertise</h6>
+    <h2 class="fw-bold display-6">Recruitment Tailored to You</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+      <div class="service-card">
+        <div class="icon-box"><i class="fas fa-briefcase"></i></div>
+        <h4>Permanent Staffing</h4>
+        <p class="text-muted">Finding long-term team members who align with your company culture and goals.</p>
+      </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="service-card">
+        <div class="icon-box"><i class="fas fa-clock"></i></div>
+        <h4>Temporary Hire</h4>
+        <p class="text-muted">Flexible staffing solutions for seasonal peaks, projects, or staff cover.</p>
+      </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+      <div class="service-card">
+        <div class="icon-box"><i class="fas fa-user-check"></i></div>
+        <h4>Executive Search</h4>
+        <p class="text-muted">Headhunting top-tier leadership talent to drive your business forward.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS SECTION -->
+<section class="stats-section" data-aos="fade-in">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-3 mb-4 mb-md-0"><div class="stat-number">2,500+</div><div class="text-white-50">Jobs Filled</div></div>
+      <div class="col-md-3 mb-4 mb-md-0"><div class="stat-number">98%</div><div class="text-white-50">Client Satisfaction</div></div>
+      <div class="col-md-3 mb-4 mb-md-0"><div class="stat-number">450+</div><div class="text-white-50">Partner Companies</div></div>
+      <div class="col-md-3"><div class="stat-number">24h</div><div class="text-white-50">Avg. Response Time</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="container py-5 my-5">
+  <div class="text-center mb-5" data-aos="fade-up">
+    <h2 class="fw-bold">How It Works</h2>
+  </div>
+  <div class="row text-center align-items-center">
+    <div class="col-md-4" data-aos="fade-right">
+      <img src="https://img.freepik.com/free-vector/resume-writing-service-abstract-concept-vector-illustration-copywriting-service-cv-profile-creation-professional-experience-description-job-application-letter-career-summary_335657-1429.jpg?w=740" class="img-fluid rounded" style="max-width: 200px;">
+      <h5 class="mt-3">1. Create Profile</h5>
+      <p class="text-muted small">Sign up and upload your CV.</p>
+    </div>
+    <div class="col-md-4" data-aos="fade-up">
+      <img src="https://img.freepik.com/free-vector/job-interview-concept-illustration_114360-24598.jpg?w=740" class="img-fluid rounded" style="max-width: 200px;">
+      <h5 class="mt-3">2. Get Matched</h5>
+      <p class="text-muted small">Our AI finds the best roles for you.</p>
+    </div>
+    <div class="col-md-4" data-aos="fade-left">
+      <img src="https://img.freepik.com/free-vector/business-deal-concept-illustration_114360-1329.jpg?w=740" class="img-fluid rounded" style="max-width: 200px;">
+      <h5 class="mt-3">3. Get Hired</h5>
+      <p class="text-muted small">Interview and start your new job.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <h5 class="text-white"><i class="fas fa-layer-group text-warning"></i> SmartRecruit</h5>
+        <p class="small">Connecting ambition with opportunity. The leading local staffing agency for modern businesses.</p>
+      </div>
+      <div class="col-md-2 mb-4">
+        <h5>For Candidates</h5>
+        <a href="#" class="small">Browse Jobs</a>
+        <a href="#" class="small">Submit CV</a>
+      </div>
+      <div class="col-md-2 mb-4">
+        <h5>For Employers</h5>
+        <a href="#" class="small">Post a Job</a>
+        <a href="#" class="small">Talent Search</a>
+      </div>
+      <div class="col-md-4">
+        <h5>Contact Us</h5>
+        <p class="small mb-1"><i class="fas fa-phone-alt me-2"></i> +94 783872180</p>
+        <p class="small mb-1"><i class="fas fa-envelope me-2"></i> oekanayake01@gmail.com</p>
+      </div>
+    </div>
+    <hr style="border-color: rgba(255,255,255,0.1);">
+    <div class="text-center small text-white-50">
+      &copy; 2026 SmartRecruit Staffing Solutions. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+  // Init Scroll Animations
+  AOS.init({ duration: 800, once: true, offset: 100 });
+
+  // --- PRELOADER LOGIC ---
+  window.addEventListener("load", function() {
+    const preloader = document.getElementById("preloader");
+    const scanContainer = document.getElementById("scan-container");
+    const loaderText = document.getElementById("loader-text");
+
+    setTimeout(() => {
+      scanContainer.classList.add("scan-complete");
+      loaderText.innerText = "Match Found!";
+      loaderText.style.color = "#d4af37";
+      loaderText.style.fontWeight = "bold";
+    }, 1500);
+
+    setTimeout(() => {
+      preloader.style.opacity = "0";
+      setTimeout(() => {
+        preloader.style.display = "none";
+      }, 600);
+    }, 2500);
+  });
+</script>
+
+<!-- CHAINLIT COPILOT EMBED -->
+<script src="http://localhost:8000/copilot/index.js"></script>
+<script>
+  window.mountChainlitWidget({
+    chainlitServer: "http://localhost:8000",
+  });
+</script>
+</body>
+</html>

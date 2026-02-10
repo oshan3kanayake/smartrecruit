@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>HR Dashboard | Recruitment App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Rich Gradient Background */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Animation */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .header-title { color: white; font-weight: 700; letter-spacing: 0.5px; }
+        .text-white-opacity { color: rgba(255,255,255,0.8); }
+
+        /* Cards */
+        .card-custom {
+            border: none;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            padding: 30px;
+            height: 100%;
+            animation: slideInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative circle in card */
+        .card-custom::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #f3f4f6, #fff);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .card-content { position: relative; z-index: 1; }
+
+        /* Form Controls */
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #f1f5f9;
+            background-color: #f8fafc;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+            border-color: #764ba2;
+            background-color: white;
+        }
+        .form-label { font-weight: 600; font-size: 0.85rem; color: #64748b; margin-bottom: 8px; }
+
+        .btn-gradient {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+            color: white;
+        }
+
+        /* Table Styling */
+        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+        .table-custom th {
+            border: none;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 0 20px 10px 20px;
+        }
+        .table-custom td {
+            background: white;
+            border: 1px solid #f1f5f9;
+            padding: 20px;
+            vertical-align: middle;
+            transition: all 0.2s;
+        }
+        .table-custom tr { transition: transform 0.2s; }
+        .table-custom tr:hover { transform: scale(1.01); }
+        .table-custom tr td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-right: none; }
+        .table-custom tr td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-left: none; }
+        .table-custom tr td:not(:first-child):not(:last-child) { border-left: none; border-right: none; }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-left: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-view { background-color: #eff6ff; color: #3b82f6; }
+        .btn-edit { background-color: #fff7ed; color: #f97316; }
+        .btn-delete { background-color: #fef2f2; color: #ef4444; }
+
+        .action-btn:hover { filter: brightness(0.95); transform: translateY(-2px); }
+
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h3 class="header-title mb-0"><i class="bi bi-grid-fill me-2 opacity-75"></i>HR Command Center</h3>
+        <div>
+            <span class="me-3 text-white-opacity">Hello, <strong class="text-white" th:text="${user.username}">User</strong></span>
+            <a href="/logout" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-primary">Logout</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+
+        <!-- Post New Job Section -->
+        <div class="col-lg-4">
+            <div class="card-custom">
+                <div class="card-content">
+                    <h4 class="mb-4 fw-bold text-dark"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Create Job</h4>
+                    <form action="/post-job" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Senior Product Designer" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" name="companyName" class="form-control" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Location</label>
+                                <input type="text" name="location" class="form-control" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Salary</label>
+                                <input type="text" name="salary" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Full Description</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Describe the role responsibilities..." required></textarea>
+                        </div>
+                        <input type="file" name="imageFile" hidden>
+
+                        <button type="submit" class="btn-gradient">Publish Listing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Jobs Section -->
+        <div class="col-lg-8">
+            <div class="card-custom">
+                <div class="card-content">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0 fw-bold text-dark">Active Recruitment</h4>
+                        <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm" th:text="${#lists.size(jobs) + ' Jobs Active'}">0 Active</span>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${#lists.isEmpty(jobs)}" class="text-center py-5 border rounded-4 bg-light dashed-border">
+                        <i class="bi bi-briefcase text-muted opacity-25 display-4"></i>
+                        <p class="text-muted mt-3">No active job listings found.</p>
+                    </div>
+
+                    <!-- Job Table -->
+                    <table class="table-custom" th:if="${!#lists.isEmpty(jobs)}">
+                        <thead>
+                        <tr>
+                            <th>Role & Company</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th class="text-end">Manage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="job : ${jobs}">
+                            <td>
+                                <div class="fw-bold text-dark" th:text="${job.title}">Title</div>
+                                <div class="small text-muted" th:text="${job.companyName}">Company</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt me-1"></i><span th:text="${job.location}">Loc</span></span>
+                            </td>
+                            <td class="text-muted small">Just now</td>
+                            <td class="text-end">
+                                <a th:href="@{/job/{id}/applications(id=${job.id})}" class="action-btn btn-view" title="Candidates">
+                                    <i class="bi bi-person-lines-fill"></i>
+                                </a>
+                                <a th:href="@{/edit-job/{id}(id=${job.id})}" class="action-btn btn-edit" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a th:href="@{/delete-job/{id}(id=${job.id})}" class="action-btn btn-delete" title="Remove" onclick="return confirm('Delete this job?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

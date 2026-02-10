@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Candidate Applications | SmartRecruit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* ========== MATCHING HOME PAGE STYLES ========== */
+        :root {
+            --primary: #0f172a;
+            --secondary: #334155;
+            --gold: #d4af37;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Navy Gradient Background with Image (RESTORED) */
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(51, 65, 85, 0.9) 100%),
+            url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        /* --- NAVBAR (Matching Home) --- */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            color: var(--primary) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            color: var(--primary) !important;
+            font-weight: 500;
+            margin: 0 15px;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width .3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Buttons */
+        .btn-back {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: var(--secondary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-back:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: white;
+        }
+
+        /* Main Card */
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            margin-top: 20px;
+        }
+
+        /* Page Header */
+        .page-title {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .job-subtitle {
+            color: var(--secondary);
+            margin-bottom: 30px;
+        }
+        .job-name {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* AI Alert */
+        .ai-info {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .ai-info i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        /* Table */
+        .table {
+            margin-bottom: 0;
+        }
+        .table thead {
+            background: var(--primary);
+            color: white;
+        }
+        .table thead th {
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .table tbody td {
+            padding: 20px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .table tbody tr:hover:not(.rejected-row) {
+            background-color: #f8fafc;
+        }
+
+        /* Status Badges - FIXED */
+        .badge-accepted {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        /* Score Badges - CLEANED UP */
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            min-width: 90px;
+            justify-content: center;
+        }
+        .score-high {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+        .score-med {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fcd34d;
+        }
+        .score-low {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        /* Rejected Row - ENHANCED */
+        .rejected-row {
+            background-color: #fff1f2 !important;
+            opacity: 0.7;
+        }
+        .rejected-row:hover {
+            opacity: 0.85 !important;
+        }
+
+        /* Download Button - CLEANED UP */
+        .btn-download {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .btn-download:hover {
+            background: var(--gold);
+            color: white;
+        }
+
+        /* Column Alignment - FIXED */
+        .score-col {
+            text-align: center;
+            width: 150px;
+        }
+        .action-col {
+            text-align: center;
+            width: 150px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .candidate-email {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .resume-file {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-layer-group" style="color: var(--gold);"></i> SMART RECRUIT
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/jobs">Find Jobs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/hr-profile">Dashboard</a></li>
+                <li class="nav-item ms-3">
+                    <a href="/hr-profile" class="btn-back">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+    <div class="content-card">
+
+        <!-- Header -->
+        <h2 class="page-title">
+            <i class="fas fa-users me-2" style="color: var(--gold);"></i>
+            Candidate Applications
+        </h2>
+        <p class="job-subtitle">
+            Reviewing applicants for: <span class="job-name" th:text="${job.title}">Job Title</span>
+        </p>
+
+        <!-- AI Info -->
+        <div class="ai-info">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-robot me-3"></i>
+                <div>
+                    <strong style="color: var(--primary); font-size: 1.1rem;">AI Auto-Screening Active</strong>
+                    <p class="mb-0 mt-2" style="color: var(--secondary);">
+                        Candidates with scores <strong>above 50%</strong> are marked as <span class="badge-accepted"><i class="fas fa-check-circle"></i> Accepted</span>.
+                        Scores <strong>50% or below</strong> are marked as <span class="badge-rejected"><i class="fas fa-times-circle"></i> Auto-Rejected</span>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Candidate</th>
+                    <th>Resume File</th>
+                    <th class="text-center">AI Score</th>
+                    <th class="text-center">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <!-- Applications Loop - CORRECTED LOGIC WITH AUTO-REJECTED LABEL -->
+                <tr th:each="app : ${applications}"
+                    th:classappend="${app.transientScore le 50} ? 'rejected-row' : ''">
+
+                    <!-- Status Column - FIXED: Shows Accepted OR Auto-Rejected -->
+                    <td>
+                        <!-- If score > 50, show Accepted -->
+                        <span th:if="${app.transientScore > 50}" class="badge-accepted">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Accepted</span>
+                        </span>
+
+                        <!-- If score <= 50, show Auto-Rejected -->
+                        <span th:if="${app.transientScore <= 50}" class="badge-rejected">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Auto-Rejected</span>
+                        </span>
+                    </td>
+
+                    <!-- Candidate Info -->
+                    <td>
+                        <div class="candidate-name" th:text="${app.user.username}">Name</div>
+                        <div class="candidate-email" th:text="${app.user.email}">Email</div>
+                    </td>
+
+                    <!-- Resume File -->
+                    <td class="resume-file">
+                        <i class="fas fa-file-pdf me-2" style="color: var(--gold);"></i>
+                        <span th:text="${app.resumeFileName}">resume.pdf</span>
+                    </td>
+
+                    <!-- AI Score - CLEANED UP -->
+                    <td class="score-col">
+                        <span th:if="${app.transientScore >= 70}" class="score-badge score-high">
+                            <i class="fas fa-star"></i>
+                            <span><span th:text="${app.transientScore}">0</span>%</span>
+                        </span>
+                        <span th:if="${app.transientScore ge 50 and app.transientScore lt 70}" class="score-badge score-med">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span><span th:text="${app.transientScore}">0</span>%</span>
+                        </span>
+                        <span th:if="${app.transientScore < 50}" class="score-badge score-low">
+                            <i class="fas fa-times-circle"></i>
+                            <span><span th:text="${app.transientScore}">0</span>%</span>
+                        </span>
+                    </td>
+
+                    <!-- Download CV - CLEANED UP -->
+                    <td class="action-col">
+                        <a th:href="@{'/uploads/' + ${app.resumeFileName}}" target="_blank" class="btn-download">
+                            <i class="fas fa-download me-1"></i> View
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${#lists.isEmpty(applications)}">
+                    <td colspan="5" class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+                        <p class="text-muted">No applications received yet for this position.</p>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Job | SmartRecruit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* ========== MATCHING HOME PAGE STYLES ========== */
+        :root {
+            --primary: #0f172a;    /* Deep Navy */
+            --secondary: #334155;
+            --gold: #d4af37;       /* Luxury Gold */
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Navy gradient background */
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(51, 65, 85, 0.9) 100%),
+            url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding-top: 100px;
+            padding-bottom: 50px;
+            color: var(--secondary);
+        }
+
+        /* --- NAVBAR (Matching Home) --- */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            color: var(--primary) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            color: var(--primary) !important;
+            font-weight: 500;
+            margin: 0 15px;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width .3s;
+        }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Card Styling */
+        .edit-card {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .page-header i {
+            color: var(--gold);
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            background-color: #f8fafc;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: white;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            background-color: var(--gold);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #b5952f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: var(--secondary);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-cancel:hover {
+            background: #f8fafc;
+            border-color: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Section Divider */
+        .section-title {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+        }
+        .section-title i {
+            color: var(--gold);
+            margin-right: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h2 { font-size: 1.8rem; }
+            .edit-card { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR (Matching Home) -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-layer-group" style="color: var(--gold);"></i> SMART RECRUIT
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/jobs">Find Jobs</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/hr-profile">My Dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="container" data-aos="fade-down">
+    <div class="page-header">
+        <i class="fas fa-edit"></i>
+        <h2>Edit Job Listing</h2>
+        <p>Update the job details below</p>
+    </div>
+</div>
+
+<!-- EDIT FORM -->
+<div class="container" style="max-width: 700px;">
+    <div class="edit-card" data-aos="fade-up">
+
+        <!-- FORM (LOGIC UNCHANGED) -->
+        <form th:action="@{/update-job}" th:object="${job}" method="post">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Job Information
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Job Title</label>
+                <input type="text" th:field="*{title}" class="form-control" placeholder="e.g. Senior Product Manager" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Company Name</label>
+                <input type="text" th:field="*{companyName}" class="form-control" placeholder="Your company name" required>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt me-1" style="color: var(--gold);"></i>
+                        Location
+                    </label>
+                    <input type="text" th:field="*{location}" class="form-control" placeholder="City or Remote" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">
+                        <i class="fas fa-dollar-sign me-1" style="color: var(--gold);"></i>
+                        Salary Range
+                    </label>
+                    <input type="text" th:field="*{salary}" class="form-control" placeholder="$50k - $80k">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Job Description</label>
+                <textarea th:field="*{description}" class="form-control" rows="6" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
+                <small class="text-muted">Provide a detailed description to attract the right candidates</small>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <a href="/hr-profile" class="btn btn-cancel">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-custom">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+</script>
+
+</body>
+</html>
